@@ -37,3 +37,14 @@ th.column-money,
 td.column-money {
   text-align: right !important;
 }
+
+.footer-body{
+  font-style: italic;
+  font-weight: 600;
+  background-color: darkgray;
+  text-align: center;
+}
+
+.footer-body:hover{
+  background-color: darkgray;
+}

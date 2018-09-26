@@ -1,10 +1,10 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import {Layout} from "antd";
+import { Layout } from "antd";
 import "antd/dist/antd.css";
-import {Card, Table} from "antd";
-const {Content} = Layout;
+import { Card, Table } from "antd";
+const { Content } = Layout;
 
 function buildColumns(cols) {
   return cols.map(x => {
@@ -16,19 +16,33 @@ function buildColumns(cols) {
   });
 }
 
-function ReportFooter({cols, data}) {
-  return cols.map(x => {
-    return (
+const FooterReport = props => {
+  return (
+    <tbody className="footer-body nohover" {...props}>
       <React.Fragment>
-      <td key={x.dataIndex}>
-        {data.reduce((sum, i) => sum + i[x.dataIndex], 0)}
-      </td>
-      </React.Fragment>
-    );
-  });
-}
+        {props.children}
+        <tr className="footer-body">
+          {props.children[0].props.columns.map((x) => {
+            return (            
+              <td key={x.dataIndex}>
+              {console.dir(x.dataIndex)}
+                {x.dataIndex  !== 'name' &&
+                  props.children[0].props.data.reduce((sum, i) => sum + i[x.dataIndex], 0)
+                }
+                {x.dataIndex === 'name' &&
+                  <span>Resume</span>
+                }
 
-function BuildReport({reportHeader, reportColumns, dataSet, exportDataSet}) {
+              </td>
+            )
+          })}
+        </tr>
+      </React.Fragment>
+    </tbody>
+  );
+};
+
+function BuildReport({ reportHeader, reportColumns, dataSet, exportDataSet }) {
   const cols = buildColumns(reportColumns);
 
   return (
@@ -45,11 +59,7 @@ function BuildReport({reportHeader, reportColumns, dataSet, exportDataSet}) {
               dataSource={dataSet}
               bordered
               title={() => "Header"}
-              footer={() => (
-                <tr className="ant-table-row">
-                  <ReportFooter cols={cols} data={dataSet} />
-                </tr>
-              )}
+              components={{ body: { wrapper: FooterReport, cols, dataSet } }}
             />
           </Card>
         </Content>
@@ -71,11 +81,16 @@ class App extends Component {
         </p>
         <BuildReport
           reportHeader={"sample"}
-          reportColumns={[{header: "x", field: "y"}, {header: "p", field: "t"}]}
+          reportColumns={[
+            { header: "Col name", field: "name" },
+            { header: "Values of Y", field: "y" },
+            { header: "Values of T", field: "t" },
+            { header: "Values of N", field: 'n' }
+          ]}
           dataSet={[
-            {y: 1, t: 2, key: "1"},
-            {y: 2, t: 4, key: "2"},
-            {y: 3, t: 6, key: "3"}
+            { name: "Y", y: 1, t: 2, n: 4, key: "1" },
+            { name: "T", y: 2, t: 4, n: 0, key: "2" },
+            { name: "N", y: 3, t: 6, n: 2, key: "3" }
           ]}
           exportDataSet={true}
         />
